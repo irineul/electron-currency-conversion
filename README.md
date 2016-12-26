@@ -1,6 +1,6 @@
 ## Electron Currency Converter App
 
-- React
+- Electron
 - ES6
 - BabelJS
 - Webpack
