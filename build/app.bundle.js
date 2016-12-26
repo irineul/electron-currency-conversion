@@ -8822,14 +8822,58 @@
 /* 299 */
 /***/ function(module, exports) {
 
-	'use strict';
+	"use strict";
 	
-	var getCurrencies = function () {
-	  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+	var convertRates = function () {
+	  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(from, to, quantity) {
 	    var url;
 	    return regeneratorRuntime.wrap(function _callee$(_context) {
 	      while (1) {
 	        switch (_context.prev = _context.next) {
+	          case 0:
+	            changeBtnProperties(true);
+	            url = 'http://api.fixer.io/latest?base=' + from + '&symbols=' + to + '?app_id=e1a03227b2e444538bd8ed483a35da7b';
+	
+	            fetch(url).then(function (response) {
+	              return response.json().then(function (latest) {
+	                if (isValidRate(latest)) {
+	                  // Conversion Rocks
+	                  document.getElementById("conversion-rocks").style.visibility = "visible";
+	                  document.getElementById("currency-to-one-value").innerHTML = Object.values(latest.rates) + ' ' + to;
+	                  document.getElementById("currency-to-one-title").innerHTML = from;
+	
+	                  // Conversion value
+	                  document.getElementById("quantity-to").value = calcRate(quantity, Object.values(latest.rates));
+	                } else {
+	                  alert('Invalid conversion');
+	                  document.getElementById("conversion-rocks").style.visibility = "hidden";
+	                  document.getElementById("quantity-to").value = "";
+	                }
+	                changeBtnProperties(false);
+	              });
+	            }).catch(function (error) {
+	              console.log(error);
+	            });
+	
+	          case 3:
+	          case "end":
+	            return _context.stop();
+	        }
+	      }
+	    }, _callee, this);
+	  }));
+	
+	  return function convertRates(_x, _x2, _x3) {
+	    return _ref.apply(this, arguments);
+	  };
+	}();
+	
+	var getCurrencies = function () {
+	  var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2() {
+	    var url;
+	    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+	      while (1) {
+	        switch (_context2.prev = _context2.next) {
 	          case 0:
 	            url = 'https://openexchangerates.org/api/currencies.json';
 	
@@ -8837,30 +8881,68 @@
 	              return response.json().then(function (currencies) {
 	                var html = '';
 	                Object.keys(currencies).forEach(function (key) {
-	                  html += '<li value=\'' + key + '\'><a href="#">' + currencies[key] + '</a></li>';
+	                  html += "<option value='" + key + "'>" + currencies[key] + "</option>";
 	                });
-	                document.getElementById("exchange-from").innerHTML = html;
+	                document.getElementById("currency-from").innerHTML = html;
+	                document.getElementById("currency-to").innerHTML = html;
 	              });
 	            }).catch(function (error) {
 	              console.log(error);
 	            });
 	
 	          case 2:
-	          case 'end':
-	            return _context.stop();
+	          case "end":
+	            return _context2.stop();
 	        }
 	      }
-	    }, _callee, this);
+	    }, _callee2, this);
 	  }));
 	
 	  return function getCurrencies() {
-	    return _ref.apply(this, arguments);
+	    return _ref2.apply(this, arguments);
 	  };
 	}();
 	
 	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 	
+	var isValidRate = function isValidRate(fixerResponse) {
+	  var isValid = true;
+	  if (fixerResponse.error) isValid = false;else {
+	    if (Object.values(fixerResponse.rates).length > 0) isValid = true;else isValid = false;
+	  }
+	  return isValid;
+	};
+	
+	var isFloat = function isFloat(n) {
+	  return Number(n) === n && n % 1 !== 0;
+	};
+	
+	var calcRate = function calcRate(quantity, value) {
+	  return parseFloat(quantity) * parseFloat(value);
+	};
+	
+	var changeBtnProperties = function changeBtnProperties(isLoading) {
+	  if (isLoading) {
+	    document.getElementById("btn-convert").disabled = true;
+	    document.getElementById("btn-convert").innerHTML = 'Loading...';
+	  } else {
+	    document.getElementById("btn-convert").disabled = false;
+	    document.getElementById("btn-convert").innerHTML = 'Convert';
+	  }
+	};
+	
+	document.getElementById('btn-convert').addEventListener('click', function () {
+	  var from = document.getElementById("currency-from").value;
+	  var to = document.getElementById("currency-to").value;
+	  var quantity = document.getElementById("quantity-from").value;
+	
+	  convertRates(from, to, quantity);
+	  document.getElementById('btn-convert').disabled = false;
+	});
+	
+	// Initialize
 	getCurrencies();
+	document.getElementById("conversion-rocks").style.visibility = "hidden";
 
 /***/ }
 /******/ ]);

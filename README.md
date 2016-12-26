@@ -1,3 +1,7 @@
-## ES6 Tutorial
+## Electron Currency Converter App
 
-Start the tutorial [here](http://ccoenraets.github.io/es6-tutorial).
+- React
+- ES6
+- BabelJS
+- Webpack
+
